@@ -1,3 +1,7 @@
+/* Import FilePond styles */
+@import 'filepond/dist/filepond.min.css';
+@import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -115,3 +119,44 @@
     }
 }
 
+/* FilePond Custom Styling */
+.filepond--root {
+    margin-bottom: 0;
+}
+
+.filepond--panel-root {
+    background-color: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+}
+
+.filepond--drop-label {
+    color: #6b7280;
+}
+
+.filepond--label-action {
+    color: #059669;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.filepond--label-action:hover {
+    color: #047857;
+}
+
+.filepond--panel-root.filepond--hopper {
+    border-color: #059669;
+    background-color: #d1fae5;
+}
+
+.filepond--item-panel {
+    background-color: #059669;
+}
+
+.filepond--drip-blob {
+    background-color: #047857;
+}
+
+[data-filepond-item-state="processing-complete"] .filepond--item-panel {
+    background-color: #10b981;
+}
