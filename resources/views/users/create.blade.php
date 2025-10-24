@@ -17,7 +17,7 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto">
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data" x-data="userForm()" id="userCreateForm">
+        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data" id="userCreateForm">
             @csrf
 
             <!-- Profile Photo Section -->
@@ -34,13 +34,13 @@
                             type="file" 
                             name="photo" 
                             id="photo" 
-                            class="filepond"
+                            class="form-input"
                             accept="image/jpeg,image/jpg,image/png"
-                            data-max-file-size="2MB"
                         >
                         @error('photo')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
+                        <p class="mt-1 text-xs text-gray-500">JPG, PNG (Max: 2MB)</p>
                     </div>
                 </div>
             </div>
@@ -208,40 +208,47 @@
                     </svg>
                     Cancel
                 </a>
-                <x-button-spinner loading-text="Creating User...">
+                <button 
+                    x-data="{ loading: false }" 
+                    x-init="$el.form && $el.form.addEventListener('submit', () => loading = true)"
+                    :disabled="loading"
+                    type="submit" 
+                    class="btn btn-primary relative">
+                    <template x-if="loading">
+                        <svg class="absolute left-3 h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </template>
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Create User
-                </x-button-spinner>
+                    <span :class="{'opacity-10': loading}">Create User</span>
+                </button>
             </div>
         </form>
     </div>
-
     @push('scripts')
     <script>
-        function userForm() {
-            return {
-                init() {
-                    // Initialize FilePond
-                    const inputElement = document.querySelector('input[type="file"].filepond');
-                    const pond = FilePond.create(inputElement, {
-                        labelIdle: 'Drag & Drop your photo or <span class="filepond--label-action">Browse</span>',
-                        acceptedFileTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-                        maxFileSize: '2MB',
-                        imagePreviewHeight: 200,
-                        imageCropAspectRatio: '1:1',
-                        imageResizeTargetWidth: 200,
-                        imageResizeTargetHeight: 200,
-                        stylePanelLayout: 'compact circle',
-                        styleLoadIndicatorPosition: 'center bottom',
-                        styleProgressIndicatorPosition: 'right bottom',
-                        styleButtonRemoveItemPosition: 'left bottom',
-                        styleButtonProcessItemPosition: 'right bottom',
-                    });
-                }
-            }
-        }
+        // Initialize FilePond on the photo input with safe, non-blocking config
+        window.addEventListener('DOMContentLoaded', () => {
+            const input = document.querySelector('#photo');
+            if (!input || typeof FilePond === 'undefined') return;
+
+            FilePond.create(input, {
+                credits: false,
+                labelIdle: 'Drag & Drop your photo or <span class="filepond--label-action">Browse</span>',
+                acceptedFileTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+                maxFileSize: '2MB',
+
+                // Critical: let the browser submit the file with the form
+                server: null,
+                instantUpload: false,
+                allowProcess: false,
+                allowRevert: false,
+                storeAsFile: true,
+            });
+        });
     </script>
     @endpush
 </x-admin-layout>

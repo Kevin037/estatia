@@ -17,7 +17,7 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto">
-        <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data" x-data="userEditForm(@js($user->photo))" id="userEditForm">
+        <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data" id="userEditForm">
             @csrf
             @method('PUT')
 
@@ -31,7 +31,7 @@
                 <div class="space-y-4">
                     <!-- Current Photo Display -->
                     @if($user->photo)
-                    <div x-show="!photoChanged" class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                         <img src="{{ $user->photo_url }}" alt="{{ $user->name }}" class="h-24 w-24 rounded-full object-cover border-2 border-gray-200">
                         <div>
                             <p class="text-sm font-medium text-gray-900">Current Photo</p>
@@ -48,10 +48,10 @@
                             type="file" 
                             name="photo" 
                             id="photo" 
-                            class="filepond"
+                            class="form-input"
                             accept="image/jpeg,image/jpg,image/png"
-                            data-max-file-size="2MB"
                         >
+                        <p class="mt-1 text-xs text-gray-500">JPEG, JPG or PNG (max 2MB)</p>
                         @error('photo')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -231,55 +231,47 @@
                     </svg>
                     Cancel
                 </a>
-                <x-button-spinner loading-text="Updating User...">
+                <button 
+                    x-data="{ loading: false }" 
+                    x-init="$el.form && $el.form.addEventListener('submit', () => loading = true)"
+                    :disabled="loading"
+                    type="submit" 
+                    class="btn btn-primary relative">
+                    <template x-if="loading">
+                        <svg class="absolute left-3 h-5 w-5 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </template>
                     <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                     </svg>
-                    Update User
-                </x-button-spinner>
+                    <span :class="{'opacity-10': loading}">Update User</span>
+                </button>
             </div>
         </form>
     </div>
-
     @push('scripts')
     <script>
-        function userEditForm(existingPhoto) {
-            return {
-                photoChanged: false,
-                
-                init() {
-                    // Initialize FilePond
-                    const inputElement = document.querySelector('input[type="file"].filepond');
-                    const pond = FilePond.create(inputElement, {
-                        labelIdle: 'Drag & Drop your photo or <span class="filepond--label-action">Browse</span>',
-                        acceptedFileTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-                        maxFileSize: '2MB',
-                        imagePreviewHeight: 200,
-                        imageCropAspectRatio: '1:1',
-                        imageResizeTargetWidth: 200,
-                        imageResizeTargetHeight: 200,
-                        stylePanelLayout: 'compact circle',
-                        styleLoadIndicatorPosition: 'center bottom',
-                        styleProgressIndicatorPosition: 'right bottom',
-                        styleButtonRemoveItemPosition: 'left bottom',
-                        styleButtonProcessItemPosition: 'right bottom',
-                    });
+        // Initialize FilePond on the photo input with safe, non-blocking config
+        window.addEventListener('DOMContentLoaded', () => {
+            const input = document.querySelector('#photo');
+            if (!input || typeof FilePond === 'undefined') return;
 
-                    // Track when photo is changed
-                    pond.on('addfile', (error, file) => {
-                        if (!error) {
-                            this.photoChanged = true;
-                        }
-                    });
+            FilePond.create(input, {
+                credits: false,
+                labelIdle: 'Drag & Drop your photo or <span class="filepond--label-action">Browse</span>',
+                acceptedFileTypes: ['image/jpeg', 'image/jpg', 'image/png'],
+                maxFileSize: '2MB',
 
-                    pond.on('removefile', (error, file) => {
-                        if (pond.getFiles().length === 0) {
-                            this.photoChanged = false;
-                        }
-                    });
-                }
-            }
-        }
+                // Critical: let the browser submit the file with the form
+                server: null,
+                instantUpload: false,
+                allowProcess: false,
+                allowRevert: false,
+                storeAsFile: true,
+            });
+        });
     </script>
     @endpush
 </x-admin-layout>
