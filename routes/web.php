@@ -21,6 +21,11 @@ Route::middleware('auth')->group(function () {
     // Master Data - Users
     Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
     Route::resource('users', UserController::class);
+
+    // Master Data - Customers
+    \App\Http\Controllers\CustomerController::class;
+    Route::get('/customers/export', [\App\Http\Controllers\CustomerController::class, 'export'])->name('customers.export');
+    Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 });
 
 require __DIR__.'/auth.php';

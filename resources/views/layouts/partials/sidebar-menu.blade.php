@@ -9,7 +9,7 @@
 </a>
 
 <!-- Master Data Menu -->
-<div x-data="{ open: {{ request()->is('users*') || request()->is('master-data/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('users*') || request()->is('customers*') || request()->is('master-data/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'"
@@ -31,8 +31,8 @@
          x-transition:leave-end="transform opacity-0 -translate-y-2"
          class="space-y-1 pl-11"
          style="display: none;">
-        <a href="{{ route('users.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('users*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Users</a>
-        <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Customers</a>
+    <a href="{{ route('users.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('users*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Users</a>
+    <a href="{{ route('customers.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('customers*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Customers</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Suppliers</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Contractors</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Sales</a>
