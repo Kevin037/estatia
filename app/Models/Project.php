@@ -65,6 +65,14 @@ class Project extends Model
     }
 
     /**
+     * Get all units through clusters
+     */
+    public function units()
+    {
+        return $this->hasManyThrough(Unit::class, Cluster::class);
+    }
+
+    /**
      * Scope to search projects
      */
     public function scopeSearch($query, $search)
