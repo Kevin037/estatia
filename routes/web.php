@@ -71,6 +71,9 @@ Route::middleware('auth')->group(function () {
     // Transaction - Projects
     Route::get('/projects/export', [\App\Http\Controllers\ProjectController::class, 'export'])->name('projects.export');
     Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+
+    // Transaction - Units (Read & Update only)
+    Route::resource('units', \App\Http\Controllers\UnitController::class)->only(['index', 'show', 'edit', 'update']);
 });
 
 require __DIR__.'/auth.php';
