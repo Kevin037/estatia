@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductPhoto;
 use App\Models\Formula;
 use App\Exports\ProductExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -45,6 +47,13 @@ class ProductController extends Controller
                     }
                     return '<div class="h-12 w-12 rounded bg-gray-200 flex items-center justify-center text-gray-400 text-xs">No Image</div>';
                 })
+                ->addColumn('photos_count', function ($product) {
+                    $count = $product->productPhotos()->count();
+                    if ($count > 0) {
+                        return '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">' . $count . ' photos</span>';
+                    }
+                    return '<span class="text-gray-400 text-xs">No photos</span>';
+                })
                 ->editColumn('price', function ($product) {
                     return '<span class="font-medium text-emerald-600">Rp ' . number_format($product->price, 0, ',', '.') . '</span>';
                 })
@@ -54,7 +63,7 @@ class ProductController extends Controller
                 ->addColumn('action', function ($product) {
                     return view('products.partials.actions', compact('product'))->render();
                 })
-                ->rawColumns(['photo', 'price', 'qty', 'action'])
+                ->rawColumns(['photo', 'photos_count', 'price', 'qty', 'action'])
                 ->make(true);
         }
 
@@ -81,21 +90,40 @@ class ProductController extends Controller
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'price' => ['required', 'numeric', 'min:0'],
             'formula_id' => ['nullable', 'exists:formulas,id'],
+            'product_photos' => ['nullable', 'array'],
+            'product_photos.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
+        DB::beginTransaction();
         try {
-            // Handle photo upload
+            // Handle main photo upload
             if ($request->hasFile('photo')) {
                 $validated['photo'] = $request->file('photo')->store('products', 'public');
             }
 
-            // Qty defaults to 0 in migration
-            Product::create($validated);
+            // Create product
+            $product = Product::create($validated);
+
+            // Handle multiple product photos
+            if ($request->hasFile('product_photos')) {
+                foreach ($request->file('product_photos') as $index => $photoFile) {
+                    $photoPath = $photoFile->store('products/photos', 'public');
+                    
+                    ProductPhoto::create([
+                        'product_id' => $product->id,
+                        'name' => 'Photo ' . ($index + 1),
+                        'photo' => $photoPath,
+                    ]);
+                }
+            }
+
+            DB::commit();
 
             return redirect()
                 ->route('products.index')
                 ->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()
                 ->back()
                 ->withInput()
@@ -117,6 +145,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $product->load('productPhotos');
         $formulas = Formula::orderBy('name')->get();
         return view('products.edit', compact('product', 'formulas'));
     }
@@ -132,10 +161,15 @@ class ProductController extends Controller
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'price' => ['required', 'numeric', 'min:0'],
             'formula_id' => ['nullable', 'exists:formulas,id'],
+            'product_photos' => ['nullable', 'array'],
+            'product_photos.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'delete_photos' => ['nullable', 'array'],
+            'delete_photos.*' => ['exists:product_photos,id'],
         ]);
 
+        DB::beginTransaction();
         try {
-            // Handle photo upload
+            // Handle main photo upload
             if ($request->hasFile('photo')) {
                 // Delete old photo if exists
                 if ($product->photo) {
@@ -146,10 +180,38 @@ class ProductController extends Controller
 
             $product->update($validated);
 
+            // Handle deleting product photos
+            if ($request->filled('delete_photos')) {
+                $photosToDelete = ProductPhoto::whereIn('id', $request->delete_photos)
+                    ->where('product_id', $product->id)
+                    ->get();
+                
+                foreach ($photosToDelete as $photo) {
+                    Storage::disk('public')->delete($photo->photo);
+                    $photo->delete();
+                }
+            }
+
+            // Handle new product photos
+            if ($request->hasFile('product_photos')) {
+                foreach ($request->file('product_photos') as $index => $photoFile) {
+                    $photoPath = $photoFile->store('products/photos', 'public');
+                    
+                    ProductPhoto::create([
+                        'product_id' => $product->id,
+                        'name' => 'Photo ' . ($product->productPhotos()->count() + $index + 1),
+                        'photo' => $photoPath,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
             return redirect()
                 ->route('products.index')
                 ->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()
                 ->back()
                 ->withInput()
@@ -162,19 +224,29 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        DB::beginTransaction();
         try {
-            // Delete photo if exists
+            // Delete main photo if exists
             if ($product->photo) {
                 Storage::disk('public')->delete($product->photo);
             }
 
+            // Delete all product photos
+            foreach ($product->productPhotos as $photo) {
+                Storage::disk('public')->delete($photo->photo);
+                $photo->delete();
+            }
+
             $product->delete();
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Product deleted successfully.'
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete product: ' . $e->getMessage()

@@ -63,6 +63,7 @@
                         <th>SKU</th>
                         <th>Photo</th>
                         <th>Name</th>
+                        <th>Photos</th>
                         <th>Stock (qty)</th>
                         <th>Price</th>
                         <th class="text-center">Actions</th>
@@ -101,6 +102,7 @@
                     { data: 'sku', name: 'sku' },
                     { data: 'photo', name: 'photo', orderable: false, searchable: false },
                     { data: 'name', name: 'name' },
+                    { data: 'photos_count', name: 'photos_count', orderable: false, searchable: false },
                     { data: 'qty', name: 'qty' },
                     { data: 'price', name: 'price' },
                     { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }

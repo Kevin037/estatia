@@ -11,6 +11,19 @@ class ProductPhoto extends Model
 
     protected $guarded = ['id'];
 
+    protected $appends = ['photo_url'];
+
+    /**
+     * Get the photo URL attribute
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return asset('images/no-image.png');
+    }
+
     /**
      * Get the product
      */
