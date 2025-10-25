@@ -9,7 +9,10 @@ class Milestone extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'name',
+        'desc',
+    ];
 
     /**
      * Get all project milestones
@@ -24,6 +27,9 @@ class Milestone extends Model
      */
     public function scopeSearch($query, $search)
     {
-        return $query->where('name', 'like', "%{$search}%");
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('desc', 'like', "%{$search}%");
+        });
     }
 }

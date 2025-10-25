@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/sales/export', [\App\Http\Controllers\SaleController::class, 'export'])->name('sales.export');
     Route::resource('sales', \App\Http\Controllers\SaleController::class);
 
+    // Master Data - Milestones
+    Route::get('/milestones/export', [\App\Http\Controllers\MilestoneController::class, 'export'])->name('milestones.export');
+    Route::resource('milestones', \App\Http\Controllers\MilestoneController::class);
+
     // Transaction - Formulas
     Route::get('/formulas/export', [\App\Http\Controllers\FormulaController::class, 'export'])->name('formulas.export');
     Route::resource('formulas', \App\Http\Controllers\FormulaController::class);
