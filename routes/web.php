@@ -74,6 +74,9 @@ Route::middleware('auth')->group(function () {
 
     // Transaction - Units (Read & Update only)
     Route::resource('units', \App\Http\Controllers\UnitController::class)->only(['index', 'show', 'edit', 'update']);
+
+    // Transaction - Clusters (Read only)
+    Route::resource('clusters', \App\Http\Controllers\ClusterController::class)->only(['index', 'show']);
 });
 
 require __DIR__.'/auth.php';

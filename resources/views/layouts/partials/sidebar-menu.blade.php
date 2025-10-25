@@ -45,7 +45,7 @@
 </div>
 
 <!-- Production Menu -->
-<div x-data="{ open: {{ request()->is('production/*') ? 'true' : 'false' }} || request()->is('projects*') || request()->is('units*') }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('production/*') ? 'true' : 'false' }} || request()->is('projects*') || request()->is('units*') || request()->is('clusters*') }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -72,7 +72,13 @@
             </svg>
             Projects
         </a>
-        <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Clusters</a>
+        <a href="{{ route('clusters.index') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('clusters*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+            </svg>
+            Clusters
+        </a>
         <a href="{{ route('units.index') }}" 
            class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('units*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
             <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
