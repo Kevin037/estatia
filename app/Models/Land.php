@@ -30,7 +30,8 @@ class Land extends Model
     public function scopeSearch($query, $search)
     {
         return $query->where(function($q) use ($search) {
-            $q->where('address', 'like', "%{$search}%")
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('address', 'like', "%{$search}%")
               ->orWhere('location', 'like', "%{$search}%");
         });
     }

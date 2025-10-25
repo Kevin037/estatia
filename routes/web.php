@@ -35,6 +35,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/suppliers/export', [\App\Http\Controllers\SupplierController::class, 'export'])->name('suppliers.export');
     Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
 
+    // Master Data - Lands
+    Route::get('/lands/export', [\App\Http\Controllers\LandController::class, 'export'])->name('lands.export');
+    Route::resource('lands', \App\Http\Controllers\LandController::class);
+
     // Transaction - Formulas
     Route::get('/formulas/export', [\App\Http\Controllers\FormulaController::class, 'export'])->name('formulas.export');
     Route::resource('formulas', \App\Http\Controllers\FormulaController::class);
