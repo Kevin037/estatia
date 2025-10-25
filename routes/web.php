@@ -46,6 +46,10 @@ Route::middleware('auth')->group(function () {
     // Transaction - Contractors
     Route::get('/contractors/export', [\App\Http\Controllers\ContractorController::class, 'export'])->name('contractors.export');
     Route::resource('contractors', \App\Http\Controllers\ContractorController::class);
+
+    // Transaction - Types
+    Route::get('/types/export', [\App\Http\Controllers\TypeController::class, 'export'])->name('types.export');
+    Route::resource('types', \App\Http\Controllers\TypeController::class);
 });
 
 require __DIR__.'/auth.php';

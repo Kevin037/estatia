@@ -9,7 +9,7 @@
 </a>
 
 <!-- Master Data Menu -->
-<div x-data="{ open: {{ request()->is('users*') || request()->is('customers*') || request()->is('materials*') || request()->is('suppliers*') || request()->is('master-data/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('users*') || request()->is('customers*') || request()->is('materials*') || request()->is('suppliers*') || request()->is('formulas*') || request()->is('contractors*') || request()->is('types*') || request()->is('products*') || request()->is('master-data/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'"
@@ -34,12 +34,14 @@
     <a href="{{ route('users.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('users*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Users</a>
     <a href="{{ route('customers.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('customers*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Customers</a>
         <a href="{{ route('suppliers.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('suppliers*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Suppliers</a>
-        <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Contractors</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Sales</a>
         <a href="{{ route('materials.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('materials*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Materials</a>
-        <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Types</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Accounts</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Milestones</a>
+        <a href="{{ route('formulas.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('formulas*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Formulas</a>
+        <a href="{{ route('products.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('products*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Products</a>
+        <a href="{{ route('contractors.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('contractors*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Contractors</a>
+        <a href="{{ route('types.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('types*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Types</a>
     </div>
 </div>
 
@@ -66,7 +68,6 @@
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Projects</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Project Milestones</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Clusters</a>
-        <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Products</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Units</a>
     </div>
 </div>
@@ -96,7 +97,7 @@
 </div>
 
 <!-- Transaction Menu -->
-<div x-data="{ open: {{ request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -114,9 +115,6 @@
          x-transition:enter-end="transform opacity-100 translate-y-0"
          class="space-y-1 pl-11"
          style="display: none;">
-        <a href="{{ route('formulas.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('formulas*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Formulas</a>
-        <a href="{{ route('products.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('products*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Products</a>
-        <a href="{{ route('contractors.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('contractors*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Contractors</a>
     </div>
 </div>
 
