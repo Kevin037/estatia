@@ -26,6 +26,14 @@ Route::middleware('auth')->group(function () {
     \App\Http\Controllers\CustomerController::class;
     Route::get('/customers/export', [\App\Http\Controllers\CustomerController::class, 'export'])->name('customers.export');
     Route::resource('customers', \App\Http\Controllers\CustomerController::class);
+
+    // Master Data - Materials
+    Route::get('/materials/export', [\App\Http\Controllers\MaterialController::class, 'export'])->name('materials.export');
+    Route::resource('materials', \App\Http\Controllers\MaterialController::class);
+
+    // Master Data - Suppliers
+    Route::get('/suppliers/export', [\App\Http\Controllers\SupplierController::class, 'export'])->name('suppliers.export');
+    Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
 });
 
 require __DIR__.'/auth.php';

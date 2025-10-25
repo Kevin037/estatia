@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->double('price');
-            $table->double('qty');
-            $table->unsignedBigInteger('supplier_id');
+            $table->double('qty')->default(0);
+            $table->unsignedBigInteger('supplier_id')->nullable();
             $table->timestamps();
             
             $table->index('name');
