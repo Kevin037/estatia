@@ -77,6 +77,12 @@ Route::middleware('auth')->group(function () {
 
     // Transaction - Clusters (Read only)
     Route::resource('clusters', \App\Http\Controllers\ClusterController::class)->only(['index', 'show']);
+
+    // Transaction - Orders (Full CRUD)
+    Route::get('/orders/ajax/clusters', [\App\Http\Controllers\OrderController::class, 'getClusters'])->name('orders.clusters');
+    Route::get('/orders/ajax/units', [\App\Http\Controllers\OrderController::class, 'getUnits'])->name('orders.units');
+    Route::get('/orders/ajax/unit-details', [\App\Http\Controllers\OrderController::class, 'getUnitDetails'])->name('orders.unit-details');
+    Route::resource('orders', \App\Http\Controllers\OrderController::class);
 });
 
 require __DIR__.'/auth.php';

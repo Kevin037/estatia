@@ -25,6 +25,30 @@ class Order extends Model
     }
 
     /**
+     * Get the project
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the cluster
+     */
+    public function cluster()
+    {
+        return $this->belongsTo(Cluster::class);
+    }
+
+    /**
+     * Get the unit
+     */
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    /**
      * Get all invoices
      */
     public function invoices()
