@@ -96,7 +96,7 @@
 </div>
 
 <!-- Transaction Menu -->
-<div x-data="{ open: {{ request()->is('formulas*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -115,6 +115,8 @@
          class="space-y-1 pl-11"
          style="display: none;">
         <a href="{{ route('formulas.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('formulas*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Formulas</a>
+        <a href="{{ route('products.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('products*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Products</a>
+        <a href="{{ route('contractors.index') }}" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('contractors*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">Contractors</a>
     </div>
 </div>
 

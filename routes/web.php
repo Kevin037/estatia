@@ -38,6 +38,14 @@ Route::middleware('auth')->group(function () {
     // Transaction - Formulas
     Route::get('/formulas/export', [\App\Http\Controllers\FormulaController::class, 'export'])->name('formulas.export');
     Route::resource('formulas', \App\Http\Controllers\FormulaController::class);
+
+    // Transaction - Products
+    Route::get('/products/export', [\App\Http\Controllers\ProductController::class, 'export'])->name('products.export');
+    Route::resource('products', \App\Http\Controllers\ProductController::class);
+
+    // Transaction - Contractors
+    Route::get('/contractors/export', [\App\Http\Controllers\ContractorController::class, 'export'])->name('contractors.export');
+    Route::resource('contractors', \App\Http\Controllers\ContractorController::class);
 });
 
 require __DIR__.'/auth.php';

@@ -13,7 +13,29 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'qty' => 'decimal:2',
     ];
+
+    protected $appends = ['photo_url'];
+
+    /**
+     * Get the photo URL attribute
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return asset('images/no-image.png');
+    }
+
+    /**
+     * Get the formula
+     */
+    public function formula()
+    {
+        return $this->belongsTo(Formula::class);
+    }
 
     /**
      * Get the type
