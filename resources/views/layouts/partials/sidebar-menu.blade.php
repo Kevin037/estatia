@@ -120,7 +120,7 @@
 </div>
 
 <!-- Transaction Menu -->
-<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('invoices*') || request()->is('payments*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -144,6 +144,20 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
             Orders
+        </a>
+        <a href="{{ route('invoices.index') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('invoices*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            Invoices
+        </a>
+        <a href="{{ route('payments.index') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('payments*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+            </svg>
+            Payments
         </a>
     </div>
 </div>

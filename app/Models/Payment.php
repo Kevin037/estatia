@@ -12,6 +12,7 @@ class Payment extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
+        'dt' => 'date',
         'paid_at' => 'datetime',
     ];
 
