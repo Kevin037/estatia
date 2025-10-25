@@ -93,6 +93,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments/ajax/invoice-details', [\App\Http\Controllers\PaymentController::class, 'getInvoiceDetails'])->name('payments.invoice-details');
     Route::get('/payments/{payment}/pdf', [\App\Http\Controllers\PaymentController::class, 'exportPdf'])->name('payments.pdf');
     Route::resource('payments', \App\Http\Controllers\PaymentController::class);
+
+    // Transaction - Tickets (Full CRUD)
+    Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\TicketController::class, 'updateStatus'])->name('tickets.update-status');
+    Route::resource('tickets', \App\Http\Controllers\TicketController::class);
 });
 
 require __DIR__.'/auth.php';

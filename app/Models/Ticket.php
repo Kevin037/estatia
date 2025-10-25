@@ -24,6 +24,17 @@ class Ticket extends Model
     }
 
     /**
+     * Get the photo URL
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return asset('images/default-ticket.png');
+    }
+
+    /**
      * Scope to search tickets
      */
     public function scopeSearch($query, $search)

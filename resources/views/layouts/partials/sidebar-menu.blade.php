@@ -120,7 +120,7 @@
 </div>
 
 <!-- Transaction Menu -->
-<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('invoices*') || request()->is('payments*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('invoices*') || request()->is('payments*') || request()->is('tickets*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -158,6 +158,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
             </svg>
             Payments
+        </a>
+        <a href="{{ route('tickets.index') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('tickets*') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+            </svg>
+            Tickets
         </a>
     </div>
 </div>
