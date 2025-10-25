@@ -34,6 +34,10 @@ Route::middleware('auth')->group(function () {
     // Master Data - Suppliers
     Route::get('/suppliers/export', [\App\Http\Controllers\SupplierController::class, 'export'])->name('suppliers.export');
     Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
+
+    // Transaction - Formulas
+    Route::get('/formulas/export', [\App\Http\Controllers\FormulaController::class, 'export'])->name('formulas.export');
+    Route::resource('formulas', \App\Http\Controllers\FormulaController::class);
 });
 
 require __DIR__.'/auth.php';
