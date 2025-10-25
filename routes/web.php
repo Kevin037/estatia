@@ -97,6 +97,9 @@ Route::middleware('auth')->group(function () {
     // Transaction - Tickets (Full CRUD)
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\TicketController::class, 'updateStatus'])->name('tickets.update-status');
     Route::resource('tickets', \App\Http\Controllers\TicketController::class);
+
+    // Transaction - Feedbacks (Full CRUD)
+    Route::resource('feedbacks', \App\Http\Controllers\FeedbackController::class);
 });
 
 require __DIR__.'/auth.php';

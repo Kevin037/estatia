@@ -9,6 +9,8 @@ class Feedback extends Model
 {
     use HasFactory;
 
+    protected $table = 'feedbacks';
+
     protected $guarded = ['id'];
 
     protected $casts = [
@@ -37,5 +39,29 @@ class Feedback extends Model
     public function scopeByOrder($query, $orderId)
     {
         return $query->where('order_id', $orderId);
+    }
+
+    /**
+     * Scope to search feedbacks
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('desc', 'like', "%{$search}%")
+              ->orWhereHas('order', function ($q) use ($search) {
+                  $q->where('no', 'like', "%{$search}%");
+              });
+        });
+    }
+
+    /**
+     * Get photo URL accessor
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return asset('storage/' . $this->photo);
+        }
+        return asset('images/default-feedback.png');
     }
 }
