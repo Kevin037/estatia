@@ -12,6 +12,13 @@ class Invoice extends Model
     protected $guarded = ['id'];
 
     /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'dt' => 'date',
+    ];
+
+    /**
      * Get the order
      */
     public function order()
@@ -67,5 +74,15 @@ class Invoice extends Model
     public function getTotalPaidAttribute()
     {
         return $this->payments()->sum('amount');
+    }
+
+    /**
+     * Get payment status attribute
+     */
+    public function getPaymentStatusAttribute()
+    {
+        $totalPaid = $this->total_paid;
+        $total = $this->order->total ?? 0;
+        return ($totalPaid >= $total && $total > 0) ? 'paid' : 'pending';
     }
 }

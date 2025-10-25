@@ -83,6 +83,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/ajax/units', [\App\Http\Controllers\OrderController::class, 'getUnits'])->name('orders.units');
     Route::get('/orders/ajax/unit-details', [\App\Http\Controllers\OrderController::class, 'getUnitDetails'])->name('orders.unit-details');
     Route::resource('orders', \App\Http\Controllers\OrderController::class);
+
+    // Transaction - Invoices (Full CRUD)
+    Route::get('/invoices/ajax/order-details', [\App\Http\Controllers\InvoiceController::class, 'getOrderDetails'])->name('invoices.order-details');
+    Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'exportPdf'])->name('invoices.pdf');
+    Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
 });
 
 require __DIR__.'/auth.php';
