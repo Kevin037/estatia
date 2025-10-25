@@ -47,6 +47,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/milestones/export', [\App\Http\Controllers\MilestoneController::class, 'export'])->name('milestones.export');
     Route::resource('milestones', \App\Http\Controllers\MilestoneController::class);
 
+    // Transaction - Purchase Orders
+    Route::get('/purchase-orders/export', [\App\Http\Controllers\PurchaseOrderController::class, 'export'])->name('purchase-orders.export');
+    Route::get('/purchase-orders/materials-by-supplier', [\App\Http\Controllers\PurchaseOrderController::class, 'getMaterialsBySupplier'])->name('purchase-orders.materials-by-supplier');
+    Route::resource('purchase-orders', \App\Http\Controllers\PurchaseOrderController::class);
+
     // Transaction - Formulas
     Route::get('/formulas/export', [\App\Http\Controllers\FormulaController::class, 'export'])->name('formulas.export');
     Route::resource('formulas', \App\Http\Controllers\FormulaController::class);
