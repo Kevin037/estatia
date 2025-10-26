@@ -252,6 +252,15 @@
 
 <!-- Accounting Menu -->
 <div class="space-y-1">
+    <a href="{{ route('chart-of-accounts.index') }}" 
+       class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('chart-of-accounts*') ? 'bg-emerald-700 text-white' : 'text-gray-300 hover:bg-emerald-800 hover:text-white' }} transition-colors duration-150"
+       :class="sidebarCollapsed && 'justify-center'">
+        <svg class="h-5 w-5 flex-shrink-0" :class="!sidebarCollapsed && 'mr-3'" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+        </svg>
+        <span x-show="!sidebarCollapsed">Chart of Account</span>
+    </a>
+    
     <a href="{{ route('general-ledger.index') }}" 
        class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('general-ledger*') ? 'bg-emerald-700 text-white' : 'text-gray-300 hover:bg-emerald-800 hover:text-white' }} transition-colors duration-150"
        :class="sidebarCollapsed && 'justify-center'">
