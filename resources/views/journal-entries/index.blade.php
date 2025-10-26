@@ -37,105 +37,109 @@
     <div class="card">
         <div class="overflow-x-auto">
             @if ($journalEntries->count() > 0)
-                @foreach ($journalEntries as $transactionId => $entries)
-                    <!-- Transaction Group Header -->
-                    <div class="bg-gray-100 px-6 py-3 border-b border-gray-300">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-semibold text-gray-700">
-                                Transaction ID: <span class="text-emerald-600">#{{ $transactionId }}</span>
-                            </h4>
-                            <span class="text-xs text-gray-500">
-                                {{ $entries->first()->dt ? \Carbon\Carbon::parse($entries->first()->dt)->format('d M Y') : '-' }}
-                            </span>
-                        </div>
-                        @if ($entries->first()->transaction_name && $entries->first()->transaction_id)
-                            <p class="text-xs text-gray-600 mt-1">
-                                {{ $entries->first()->transaction_name }} #{{ $entries->first()->transaction_id }}
-                            </p>
-                        @endif
-                    </div>
-
-                    <!-- Transaction Entries Table -->
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Tanggal
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Kode Akun
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Akun
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Debit
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Kredit
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kode Akun
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Akun / Penjelasan
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Debit
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kredit
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        @php
+                            $grandTotalDebit = 0;
+                            $grandTotalCredit = 0;
+                        @endphp
+                        @foreach ($journalEntries as $transactionId => $entries)
                             @php
-                                $totalDebit = 0;
-                                $totalKredit = 0;
+                                $firstEntry = true;
+                                $transactionDate = $entries->first()->dt ? \Carbon\Carbon::parse($entries->first()->dt)->format('d M Y') : '-';
                             @endphp
                             @foreach ($entries as $entry)
                                 @php
-                                    $totalDebit += $entry->debit ?? 0;
-                                    $totalKredit += $entry->kredit ?? 0;
+                                    $grandTotalDebit += $entry->debit ?? 0;
+                                    $grandTotalCredit += $entry->credit ?? 0;
                                 @endphp
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-3 whitespace-nowrap">
+                                        @if ($firstEntry)
+                                            <div class="text-sm text-gray-900">
+                                                {{ $transactionDate }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm text-gray-900">
-                                            {{ $entry->dt ? \Carbon\Carbon::parse($entry->dt)->format('d/m/Y') : '-' }}
+                                            {{ $entry->account->code ?? $entry->account_id }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ $entry->account_id }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-3">
                                         <div class="text-sm text-gray-900">
                                             {{ $entry->account->name ?? '-' }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <div class="text-sm font-medium {{ $entry->debit ? 'text-green-600' : 'text-gray-400' }}">
-                                            {{ $entry->debit ? 'Rp ' . number_format($entry->debit, 0, ',', '.') : '-' }}
+                                    <td class="px-6 py-3 whitespace-nowrap text-right">
+                                        <div class="text-sm text-gray-900">
+                                            {{ $entry->debit > 0 ? number_format($entry->debit, 2, ',', '.') : '-' }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <div class="text-sm font-medium {{ $entry->kredit ? 'text-red-600' : 'text-gray-400' }}">
-                                            {{ $entry->kredit ? 'Rp ' . number_format($entry->kredit, 0, ',', '.') : '-' }}
+                                    <td class="px-6 py-3 whitespace-nowrap text-right">
+                                        <div class="text-sm text-gray-900">
+                                            {{ $entry->credit > 0 ? number_format($entry->credit, 2, ',', '.') : '-' }}
                                         </div>
                                     </td>
                                 </tr>
+                                @php
+                                    $firstEntry = false;
+                                @endphp
                             @endforeach
-                        </tbody>
-                        <!-- Transaction Total -->
-                        <tfoot class="bg-gray-50">
-                            <tr class="font-semibold">
-                                <td colspan="3" class="px-6 py-3 text-right text-sm text-gray-700">
-                                    Total Transaction #{{ $transactionId }}:
-                                </td>
-                                <td class="px-6 py-3 text-right text-sm {{ $totalDebit > 0 ? 'text-green-600' : 'text-gray-400' }}">
-                                    {{ $totalDebit > 0 ? 'Rp ' . number_format($totalDebit, 0, ',', '.') : '-' }}
-                                </td>
-                                <td class="px-6 py-3 text-right text-sm {{ $totalKredit > 0 ? 'text-red-600' : 'text-gray-400' }}">
-                                    {{ $totalKredit > 0 ? 'Rp ' . number_format($totalKredit, 0, ',', '.') : '-' }}
+                            <!-- Explanation row -->
+                            <tr class="bg-gray-50 border-b-2 border-gray-300">
+                                <td class="px-6 py-2" colspan="2"></td>
+                                <td class="px-6 py-2" colspan="3">
+                                    <div class="text-xs italic text-gray-600">
+                                        <span class="font-medium">Penjelasan:</span>
+                                        @php
+                                            $transaction = $entries->first()->transaction();
+                                            $transactionType = $entries->first()->transaction_name;
+                                            $transactionNo = $transaction->no ?? null;
+                                        @endphp
+                                        @if ($entries->first()->desc)
+                                            {{ $entries->first()->desc }}
+                                        @else
+                                            [{{ date('Y') }}/{{ $transactionType }}/{{ $transactionNo ?? $entries->first()->transaction_id }}] 
+                                            @if ($transactionType === 'Order')
+                                                Untuk Order #{{ $transactionNo ?? $entries->first()->transaction_id }}
+                                            @elseif ($transactionType === 'Payment')
+                                                Untuk Payment #{{ $transactionNo ?? $entries->first()->transaction_id }}
+                                            @elseif ($transactionType === 'PurchaseOrder')
+                                                Untuk Vendor Invoice #{{ $transactionNo ?? $entries->first()->transaction_id }}
+                                            @else
+                                                Untuk {{ $transactionType }} #{{ $transactionNo ?? $entries->first()->transaction_id }}
+                                            @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
-                        </tfoot>
-                    </table>
-
-                    <!-- Spacing between transactions -->
-                    @if (!$loop->last)
-                        <div class="h-4 bg-gray-50"></div>
-                    @endif
-                @endforeach
+                            <!-- Empty spacing row -->
+                            <tr class="border-b border-gray-100">
+                                <td colspan="5" class="py-2"></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             @else
                 <!-- Empty State -->
                 <div class="px-6 py-12 text-center">
@@ -149,16 +153,5 @@
                 </div>
             @endif
         </div>
-
-        <!-- Footer with total count -->
-        @if ($journalEntries->count() > 0)
-            <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
-                <div class="text-sm text-gray-700">
-                    Total Transactions: <span class="font-semibold">{{ $journalEntries->count() }}</span>
-                    <span class="text-gray-500 mx-2">|</span>
-                    Total Entries: <span class="font-semibold">{{ $journalEntries->flatten()->count() }}</span>
-                </div>
-            </div>
-        @endif
     </div>
 </x-admin-layout>
