@@ -66,5 +66,25 @@ class ReportController extends Controller
 
         return view('reports.balance_sheet', compact('data', 'asOfDate', 'plStartDate', 'plEndDate'));
     }
+
+    /**
+     * Get monthly sales and profit growth data (JSON API endpoint)
+     */
+    public function monthlyGrowth(Request $request)
+    {
+        // Validate months parameter
+        $request->validate([
+            'months' => 'nullable|integer|min:1|max:36',
+        ]);
+
+        // Get months parameter (default: 12)
+        $months = $request->input('months', 12);
+
+        // Get data from service
+        $data = $this->reportService->getMonthlySalesAndProfit($months);
+
+        // Return JSON response
+        return response()->json($data);
+    }
 }
 

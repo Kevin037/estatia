@@ -271,4 +271,77 @@ class ReportService
         
         return $difference <= $tolerance;
     }
+
+    /**
+     * Get monthly sales and profit data for the last N months.
+     * Always returns the latest months ending with the current month.
+     * 
+     * @param int $months Number of months to retrieve (default: 12, max: 36)
+     * @return array Structured data for charting with labels, sales, and profit arrays
+     */
+    public function getMonthlySalesAndProfit(int $months = 12): array
+    {
+        // Ensure months is between 1 and 36
+        $months = max(1, min(36, $months));
+
+        // Get current date
+        $endDate = Carbon::now();
+        
+        // Calculate start date (N months ago)
+        $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
+
+        $labels = [];
+        $salesData = [];
+        $profitData = [];
+
+        // Loop through each month from start to end
+        $currentMonth = $startDate->copy();
+        
+        while ($currentMonth <= $endDate) {
+            $monthStart = $currentMonth->copy()->startOfMonth();
+            $monthEnd = $currentMonth->copy()->endOfMonth();
+
+            // Label format: "Nov 2024"
+            $labels[] = $monthStart->format('M Y');
+
+            // Calculate total sales for the month (completed orders)
+            $totalSales = Order::whereBetween('dt', [$monthStart, $monthEnd])
+                ->where('status', 'completed')
+                ->sum('total');
+
+            // Calculate total HPP/COGS for the month (completed purchase orders)
+            $totalHpp = PurchaseOrder::whereBetween('dt', [$monthStart, $monthEnd])
+                ->where('status', 'completed')
+                ->sum('total');
+
+            // Calculate total expenses for the month (expense account journal entries)
+            $totalExpenses = DB::table('journal_entries')
+                ->join('accounts', 'journal_entries.account_id', '=', 'accounts.id')
+                ->whereBetween('journal_entries.dt', [$monthStart, $monthEnd])
+                ->whereNotNull('journal_entries.credit')
+                ->where('accounts.id', 'like', '5%')
+                ->sum('journal_entries.credit');
+
+            // Calculate net profit: Sales - HPP - Expenses
+            $netProfit = $totalSales - $totalHpp - $totalExpenses;
+
+            // Round to 2 decimals and cast to float
+            $salesData[] = round((float) $totalSales, 2);
+            $profitData[] = round((float) $netProfit, 2);
+
+            // Move to next month
+            $currentMonth->addMonth();
+        }
+
+        return [
+            'labels' => $labels,
+            'sales' => $salesData,
+            'profit' => $profitData,
+            'meta' => [
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+                'months' => $months,
+            ]
+        ];
+    }
 }

@@ -119,6 +119,9 @@ Route::middleware('auth')->group(function () {
     
     // Reports - Balance Sheet
     Route::get('/reports/balance-sheet', [\App\Http\Controllers\ReportController::class, 'balanceSheet'])->name('reports.balance_sheet');
+    
+    // Reports - Monthly Growth API
+    Route::get('/reports/monthly-growth', [\App\Http\Controllers\ReportController::class, 'monthlyGrowth'])->name('reports.monthly_growth');
 });
 
 require __DIR__.'/auth.php';

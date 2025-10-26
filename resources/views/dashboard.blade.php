@@ -126,6 +126,11 @@
         </div>
     </div>
 
+    <!-- Sales & Profit Growth Chart -->
+    <div class="mb-6">
+        @include('dashboard._monthly_growth')
+    </div>
+
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <!-- Recent Orders -->
