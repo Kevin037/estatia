@@ -212,12 +212,73 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified project
+     * Display the specified project with all related information
      */
     public function show(Project $project)
     {
-        $project->load(['land', 'contractors', 'projectMilestones.milestone', 'clusters.units.product', 'purchaseOrders']);
-        return view('projects.show', compact('project'));
+        // Load all related data with nested relationships
+        $project->load([
+            'land',
+            'contractors',
+            'projectMilestones.milestone',
+            'clusters.units.product.type',
+            'clusters.units.product.formula.details.material',
+            'purchaseOrders.supplier',
+            'purchaseOrders.details.material'
+        ]);
+
+        // Calculate project statistics
+        $totalUnits = $project->clusters->sum(function ($cluster) {
+            return $cluster->units->count();
+        });
+
+        $availableUnits = $project->clusters->sum(function ($cluster) {
+            return $cluster->units->where('status', 'available')->count();
+        });
+
+        $soldUnits = $project->clusters->sum(function ($cluster) {
+            return $cluster->units->where('status', 'sold')->count();
+        });
+
+        $totalValue = $project->clusters->sum(function ($cluster) {
+            return $cluster->units->sum('price');
+        });
+
+        $soldValue = $project->clusters->sum(function ($cluster) {
+            return $cluster->units->where('status', 'sold')->sum('price');
+        });
+
+        // Calculate milestone progress
+        $totalMilestones = $project->projectMilestones->count();
+        $completedMilestones = $project->projectMilestones->where('status', 'completed')->count();
+        $milestoneProgress = $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100, 2) : 0;
+
+        // Group units by product for each cluster
+        foreach ($project->clusters as $cluster) {
+            $cluster->unitsByProduct = $cluster->units->groupBy('product_id')->map(function ($units) {
+                return [
+                    'product' => $units->first()->product,
+                    'total' => $units->count(),
+                    'available' => $units->where('status', 'available')->count(),
+                    'sold' => $units->where('status', 'sold')->count(),
+                    'reserved' => $units->where('status', 'reserved')->count(),
+                    'units' => $units
+                ];
+            });
+        }
+
+        $stats = [
+            'total_units' => $totalUnits,
+            'available_units' => $availableUnits,
+            'sold_units' => $soldUnits,
+            'total_value' => $totalValue,
+            'sold_value' => $soldValue,
+            'milestone_progress' => $milestoneProgress,
+            'total_milestones' => $totalMilestones,
+            'completed_milestones' => $completedMilestones,
+        ];
+
+        return view('projects.show', compact('project', 'stats'));
     }
 
     /**
