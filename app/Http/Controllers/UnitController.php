@@ -9,10 +9,12 @@ use App\Models\Cluster;
 use App\Models\Product;
 use App\Models\Type;
 use App\Models\Sales;
+use App\Exports\UnitsExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UnitController extends Controller
 {
@@ -188,5 +190,22 @@ class UnitController extends Controller
                 ->withInput()
                 ->with('error', 'Failed to update unit: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Export units to Excel
+     */
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new UnitsExport(
+                $request->project_id,
+                $request->type_id,
+                $request->status,
+                $request->min_price,
+                $request->max_price
+            ),
+            'units_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

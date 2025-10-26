@@ -88,40 +88,42 @@
     </div>
 
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .choices__inner {
+        .select2-container--default .select2-selection--multiple {
             min-height: 42px;
             border-color: #d1d5db;
             border-radius: 0.375rem;
         }
-        .choices__inner:focus {
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
             border-color: #059669;
         }
-        .choices[data-type*=select-multiple] .choices__button {
-            border-left-color: #059669;
-        }
-        .choices__list--multiple .choices__item {
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
             background-color: #059669;
             border-color: #059669;
+            color: white;
         }
-        .is-highlighted {
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #f3f4f6;
+        }
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
             background-color: #059669 !important;
         }
     </style>
     @endpush
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const element = document.getElementById('materials');
-            const choices = new Choices(element, {
-                removeItemButton: true,
-                searchEnabled: true,
-                searchPlaceholderValue: 'Search materials...',
-                noResultsText: 'No materials found',
-                itemSelectText: 'Click to select',
+        $(document).ready(function() {
+            $('#materials').select2({
+                placeholder: 'Search and select materials...',
+                allowClear: true,
+                width: '100%',
+                closeOnSelect: false
             });
         });
     </script>

@@ -73,32 +73,38 @@ Route::middleware('auth')->group(function () {
     Route::resource('projects', \App\Http\Controllers\ProjectController::class);
 
     // Transaction - Units (Read & Update only)
+    Route::get('/units/export', [\App\Http\Controllers\UnitController::class, 'export'])->name('units.export');
     Route::resource('units', \App\Http\Controllers\UnitController::class)->only(['index', 'show', 'edit', 'update']);
 
     // Transaction - Clusters (Read only)
     Route::resource('clusters', \App\Http\Controllers\ClusterController::class)->only(['index', 'show']);
 
     // Transaction - Orders (Full CRUD)
+    Route::get('/orders/export', [\App\Http\Controllers\OrderController::class, 'export'])->name('orders.export');
     Route::get('/orders/ajax/clusters', [\App\Http\Controllers\OrderController::class, 'getClusters'])->name('orders.clusters');
     Route::get('/orders/ajax/units', [\App\Http\Controllers\OrderController::class, 'getUnits'])->name('orders.units');
     Route::get('/orders/ajax/unit-details', [\App\Http\Controllers\OrderController::class, 'getUnitDetails'])->name('orders.unit-details');
     Route::resource('orders', \App\Http\Controllers\OrderController::class);
 
     // Transaction - Invoices (Full CRUD)
+    Route::get('/invoices/export', [\App\Http\Controllers\InvoiceController::class, 'export'])->name('invoices.export');
     Route::get('/invoices/ajax/order-details', [\App\Http\Controllers\InvoiceController::class, 'getOrderDetails'])->name('invoices.order-details');
     Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'exportPdf'])->name('invoices.pdf');
     Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
 
     // Transaction - Payments (Full CRUD)
+    Route::get('/payments/export', [\App\Http\Controllers\PaymentController::class, 'export'])->name('payments.export');
     Route::get('/payments/ajax/invoice-details', [\App\Http\Controllers\PaymentController::class, 'getInvoiceDetails'])->name('payments.invoice-details');
     Route::get('/payments/{payment}/pdf', [\App\Http\Controllers\PaymentController::class, 'exportPdf'])->name('payments.pdf');
     Route::resource('payments', \App\Http\Controllers\PaymentController::class);
 
     // Transaction - Tickets (Full CRUD)
+    Route::get('/tickets/export', [\App\Http\Controllers\TicketController::class, 'export'])->name('tickets.export');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\TicketController::class, 'updateStatus'])->name('tickets.update-status');
     Route::resource('tickets', \App\Http\Controllers\TicketController::class);
 
     // Transaction - Feedbacks (Full CRUD)
+    Route::get('/feedbacks/export', [\App\Http\Controllers\FeedbackController::class, 'export'])->name('feedbacks.export');
     Route::resource('feedbacks', \App\Http\Controllers\FeedbackController::class);
 
     // Accounting - Journal Entries

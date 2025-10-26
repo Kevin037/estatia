@@ -9,6 +9,8 @@ use App\Models\Cluster;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -285,5 +287,16 @@ class OrderController extends Controller
         ];
 
         return response()->json($response);
+    }
+
+    /**
+     * Export orders to Excel
+     */
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new OrdersExport($request->project_id),
+            'orders_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

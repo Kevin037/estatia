@@ -7,6 +7,8 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\InvoicesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InvoiceController extends Controller
 {
@@ -227,5 +229,16 @@ class InvoiceController extends Controller
         $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
         
         return $pdf->download('invoice-' . $invoice->no . '.pdf');
+    }
+
+    /**
+     * Export invoices to Excel
+     */
+    public function export()
+    {
+        return Excel::download(
+            new InvoicesExport(),
+            'invoices_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

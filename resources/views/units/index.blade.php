@@ -66,12 +66,20 @@
     <div class="card">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-medium text-gray-900">Units List</h3>
-            <button type="button" id="filterBtn" class="btn btn-secondary">
-                <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                </svg>
-                Filters
-            </button>
+            <div class="flex items-center gap-x-3">
+                <button type="button" id="filterBtn" class="btn btn-secondary">
+                    <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                    </svg>
+                    Filters
+                </button>
+                <button type="button" id="exportBtn" class="btn btn-secondary">
+                    <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    Export Excel
+                </button>
+            </div>
         </div>
         <div class="table-container">
             <table id="unitsTable" class="table">
@@ -164,6 +172,24 @@
                 $('#filterForm')[0].reset();
                 $('#project_id, #type_id, #status').val(null).trigger('change');
                 table.ajax.reload();
+            });
+
+            // Export functionality
+            $('#exportBtn').click(function() {
+                const projectId = $('#project_id').val();
+                const typeId = $('#type_id').val();
+                const status = $('#status').val();
+                const minPrice = $('#min_price').val();
+                const maxPrice = $('#max_price').val();
+                
+                let url = '{{ route('units.export') }}?';
+                if (projectId) url += 'project_id=' + projectId + '&';
+                if (typeId) url += 'type_id=' + typeId + '&';
+                if (status) url += 'status=' + status + '&';
+                if (minPrice) url += 'min_price=' + minPrice + '&';
+                if (maxPrice) url += 'max_price=' + maxPrice;
+                
+                window.location.href = url;
             });
         });
     </script>

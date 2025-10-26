@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\PaymentsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentController extends Controller
 {
@@ -282,5 +284,16 @@ class PaymentController extends Controller
         $pdf = Pdf::loadView('payments.pdf', compact('payment'));
         
         return $pdf->download('payment-' . $payment->no . '.pdf');
+    }
+
+    /**
+     * Export payments to Excel
+     */
+    public function export()
+    {
+        return Excel::download(
+            new PaymentsExport(),
+            'payments_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

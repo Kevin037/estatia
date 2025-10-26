@@ -7,6 +7,8 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\FeedbacksExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FeedbackController extends Controller
 {
@@ -149,5 +151,16 @@ class FeedbackController extends Controller
             'success' => true,
             'message' => 'Feedback deleted successfully!'
         ]);
+    }
+
+    /**
+     * Export feedbacks to Excel
+     */
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new FeedbacksExport($request->start_date, $request->end_date),
+            'feedbacks_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }

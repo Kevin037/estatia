@@ -7,6 +7,8 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\TicketsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TicketController extends Controller
 {
@@ -188,5 +190,16 @@ class TicketController extends Controller
             'success' => true,
             'message' => 'Ticket status updated successfully!'
         ]);
+    }
+
+    /**
+     * Export tickets to Excel
+     */
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new TicketsExport($request->start_date, $request->end_date),
+            'tickets_' . now()->format('Y-m-d_His') . '.xlsx'
+        );
     }
 }
