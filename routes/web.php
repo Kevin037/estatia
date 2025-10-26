@@ -113,6 +113,9 @@ Route::middleware('auth')->group(function () {
     // Accounting - General Ledger (Buku Besar)
     Route::get('/general-ledger', [\App\Http\Controllers\GeneralLedgerController::class, 'index'])->name('general-ledger.index');
     Route::get('/general-ledger/{account}', [\App\Http\Controllers\GeneralLedgerController::class, 'show'])->name('general-ledger.show');
+
+    // Reports - Profit & Loss
+    Route::get('/reports/profit-loss', [\App\Http\Controllers\ReportController::class, 'profitLoss'])->name('reports.profit_loss');
 });
 
 require __DIR__.'/auth.php';

@@ -308,6 +308,10 @@
          x-transition:enter-end="transform opacity-100 translate-y-0"
          class="space-y-1 pl-11"
          style="display: none;">
+        <a href="{{ route('reports.profit_loss') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('reports/profit-loss') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            Profit & Loss
+        </a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Sales Report</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Purchase Report</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Project Report</a>
