@@ -41,5 +41,30 @@ class ReportController extends Controller
 
         return view('reports.profit_loss', compact('data', 'startDate', 'endDate'));
     }
+
+    /**
+     * Display Balance Sheet report
+     */
+    public function balanceSheet(Request $request)
+    {
+        // Validate date inputs
+        $request->validate([
+            'as_of' => 'nullable|date|date_format:Y-m-d',
+            'pl_start_date' => 'nullable|date|date_format:Y-m-d',
+            'pl_end_date' => 'nullable|date|date_format:Y-m-d|after_or_equal:pl_start_date',
+        ]);
+
+        // Get as_of date (default to today)
+        $asOfDate = $request->input('as_of', Carbon::now()->format('Y-m-d'));
+
+        // Default P&L period: start of month of as_of -> as_of
+        $plStartDate = $request->input('pl_start_date', Carbon::parse($asOfDate)->startOfMonth()->format('Y-m-d'));
+        $plEndDate = $request->input('pl_end_date', $asOfDate);
+
+        // Calculate balance sheet using service
+        $data = $this->reportService->calculateBalanceSheet($asOfDate, $plStartDate, $plEndDate);
+
+        return view('reports.balance_sheet', compact('data', 'asOfDate', 'plStartDate', 'plEndDate'));
+    }
 }
 

@@ -312,6 +312,10 @@
            class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('reports/profit-loss') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
             Profit & Loss
         </a>
+        <a href="{{ route('reports.balance_sheet') }}" 
+           class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('reports/balance-sheet') ? 'bg-emerald-700 text-white' : 'text-gray-400 hover:bg-emerald-800 hover:text-white' }} transition-colors">
+            Balance Sheet
+        </a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Sales Report</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Purchase Report</a>
         <a href="#" class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-emerald-800 hover:text-white transition-colors">Project Report</a>
