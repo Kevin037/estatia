@@ -100,6 +100,10 @@ Route::middleware('auth')->group(function () {
 
     // Transaction - Feedbacks (Full CRUD)
     Route::resource('feedbacks', \App\Http\Controllers\FeedbackController::class);
+
+    // Accounting - General Ledger (Buku Besar)
+    Route::get('/general-ledger', [\App\Http\Controllers\GeneralLedgerController::class, 'index'])->name('general-ledger.index');
+    Route::get('/general-ledger/{account}', [\App\Http\Controllers\GeneralLedgerController::class, 'show'])->name('general-ledger.show');
 });
 
 require __DIR__.'/auth.php';

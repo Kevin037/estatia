@@ -26,6 +26,35 @@ class JournalEntry extends Model
     }
 
     /**
+     * Get the related transaction dynamically based on transaction_name and transaction_id
+     * 
+     * Example: 
+     * - If transaction_name = 'Order', it will return the Order model
+     * - If transaction_name = 'PurchaseOrder', it will return the PurchaseOrder model
+     * 
+     * Usage: $journalEntry->transaction()
+     */
+    public function transaction()
+    {
+        if (!$this->transaction_name || !$this->transaction_id) {
+            return null;
+        }
+
+        // Convert transaction_name to the model class
+        // e.g., 'Order' -> App\Models\Order
+        // e.g., 'PurchaseOrder' -> App\Models\PurchaseOrder
+        $modelClass = "App\\Models\\" . $this->transaction_name;
+
+        // Check if the model class exists
+        if (!class_exists($modelClass)) {
+            return null;
+        }
+
+        // Return the related model instance
+        return $modelClass::find($this->transaction_id);
+    }
+
+    /**
      * Scope to filter by date range
      */
     public function scopeDateRange($query, $startDate, $endDate)
