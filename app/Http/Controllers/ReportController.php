@@ -86,5 +86,72 @@ class ReportController extends Controller
         // Return JSON response
         return response()->json($data);
     }
+
+    /**
+     * Get monthly top products revenue data (JSON API endpoint)
+     */
+    public function monthlyTopProducts(Request $request)
+    {
+        // Validate months parameter
+        $request->validate([
+            'months' => 'nullable|integer|min:1|max:36',
+        ]);
+
+        // Get months parameter (default: 12)
+        $months = $request->input('months', 12);
+
+        // Get data from service
+        $data = $this->reportService->getMonthlyTopProducts($months);
+
+        // Return JSON response
+        return response()->json($data);
+    }
+
+    /**
+     * Get top products drilldown for a specific month (JSON API endpoint)
+     */
+    public function monthlyTopProductsDrilldown(int $year, int $month, Request $request)
+    {
+        // Validate input parameters
+        $request->validate([
+            'top' => 'nullable|integer|min:1|max:20',
+        ]);
+
+        // Validate year and month ranges
+        if ($year < 2000 || $year > 2100) {
+            return response()->json(['error' => 'Invalid year'], 400);
+        }
+
+        if ($month < 1 || $month > 12) {
+            return response()->json(['error' => 'Invalid month'], 400);
+        }
+
+        // Get top parameter (default: 5)
+        $top = $request->input('top', 5);
+
+        // Get data from service
+        $data = $this->reportService->getTopProductsForMonth($year, $month, $top);
+
+        // Return JSON response
+        return response()->json($data);
+    }
+
+    /**
+     * Get monthly summary comparing current month to previous month (JSON API endpoint)
+     */
+    public function monthlySummary(Request $request)
+    {
+        // Optional: allow specifying as_of date
+        $asOf = $request->has('as_of') 
+            ? \Carbon\Carbon::parse($request->input('as_of'))
+            : null;
+
+        // Get data from service
+        $data = $this->reportService->getMonthlySummary($asOf);
+
+        // Return JSON response
+        return response()->json($data);
+    }
 }
+
 

@@ -275,7 +275,8 @@ class ReportService
     /**
      * Get monthly sales and profit data for the last N months.
      * Always returns the latest months ending with the current month.
-     * 
+     * OPTIMIZED: Uses single query per metric with GROUP BY for better performance.
+     *
      * @param int $months Number of months to retrieve (default: 12, max: 36)
      * @return array Structured data for charting with labels, sales, and profit arrays
      */
@@ -290,44 +291,85 @@ class ReportService
         // Calculate start date (N months ago)
         $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
 
+        // OPTIMIZATION 1: Get all sales data in one query with GROUP BY
+        $salesByMonth = Order::whereBetween('dt', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->select(
+                DB::raw('YEAR(dt) as year'),
+                DB::raw('MONTH(dt) as month'),
+                DB::raw('SUM(total) as total_sales')
+            )
+            ->groupBy(DB::raw('YEAR(dt)'), DB::raw('MONTH(dt)'))
+            ->get()
+            ->keyBy(function($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // OPTIMIZATION 2: Get all HPP/COGS data in one query with GROUP BY
+        $hppByMonth = PurchaseOrder::whereBetween('dt', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->select(
+                DB::raw('YEAR(dt) as year'),
+                DB::raw('MONTH(dt) as month'),
+                DB::raw('SUM(total) as total_hpp')
+            )
+            ->groupBy(DB::raw('YEAR(dt)'), DB::raw('MONTH(dt)'))
+            ->get()
+            ->keyBy(function($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // OPTIMIZATION 3: Get all expenses data in one query with GROUP BY
+        $expensesByMonth = DB::table('journal_entries')
+            ->join('accounts', 'journal_entries.account_id', '=', 'accounts.id')
+            ->whereBetween('journal_entries.dt', [$startDate, $endDate])
+            ->whereNotNull('journal_entries.credit')
+            ->where('accounts.id', 'like', '5%')
+            ->select(
+                DB::raw('YEAR(journal_entries.dt) as year'),
+                DB::raw('MONTH(journal_entries.dt) as month'),
+                DB::raw('SUM(journal_entries.credit) as total_expenses')
+            )
+            ->groupBy(DB::raw('YEAR(journal_entries.dt)'), DB::raw('MONTH(journal_entries.dt)'))
+            ->get()
+            ->keyBy(function($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
         $labels = [];
         $salesData = [];
         $profitData = [];
 
-        // Loop through each month from start to end
+        // Loop through each month from start to end, building arrays
         $currentMonth = $startDate->copy();
         
         while ($currentMonth <= $endDate) {
-            $monthStart = $currentMonth->copy()->startOfMonth();
-            $monthEnd = $currentMonth->copy()->endOfMonth();
+            $year = $currentMonth->year;
+            $month = $currentMonth->month;
+            $key = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT);
 
             // Label format: "Nov 2024"
-            $labels[] = $monthStart->format('M Y');
+            $labels[] = $currentMonth->format('M Y');
 
-            // Calculate total sales for the month (completed orders)
-            $totalSales = Order::whereBetween('dt', [$monthStart, $monthEnd])
-                ->where('status', 'completed')
-                ->sum('total');
-
-            // Calculate total HPP/COGS for the month (completed purchase orders)
-            $totalHpp = PurchaseOrder::whereBetween('dt', [$monthStart, $monthEnd])
-                ->where('status', 'completed')
-                ->sum('total');
-
-            // Calculate total expenses for the month (expense account journal entries)
-            $totalExpenses = DB::table('journal_entries')
-                ->join('accounts', 'journal_entries.account_id', '=', 'accounts.id')
-                ->whereBetween('journal_entries.dt', [$monthStart, $monthEnd])
-                ->whereNotNull('journal_entries.credit')
-                ->where('accounts.id', 'like', '5%')
-                ->sum('journal_entries.credit');
+            // Get values from pre-fetched data or 0 if not found
+            $totalSales = isset($salesByMonth[$key]) 
+                ? (float) $salesByMonth[$key]->total_sales 
+                : 0.0;
+            
+            $totalHpp = isset($hppByMonth[$key]) 
+                ? (float) $hppByMonth[$key]->total_hpp 
+                : 0.0;
+            
+            $totalExpenses = isset($expensesByMonth[$key]) 
+                ? (float) $expensesByMonth[$key]->total_expenses 
+                : 0.0;
 
             // Calculate net profit: Sales - HPP - Expenses
             $netProfit = $totalSales - $totalHpp - $totalExpenses;
 
             // Round to 2 decimals and cast to float
-            $salesData[] = round((float) $totalSales, 2);
-            $profitData[] = round((float) $netProfit, 2);
+            $salesData[] = round($totalSales, 2);
+            $profitData[] = round($netProfit, 2);
 
             // Move to next month
             $currentMonth->addMonth();
@@ -342,6 +384,242 @@ class ReportService
                 'end_date' => $endDate->format('Y-m-d'),
                 'months' => $months,
             ]
+        ];
+    }    /**
+     * Get monthly top products revenue data for the last N months.
+     * Returns total revenue per month for bar chart visualization.
+     * OPTIMIZED: Uses single query with GROUP BY for better performance.
+     *
+     * @param int $months Number of months to retrieve (default: 12, max: 36)
+     * @return array Structured data with labels, revenues, and metadata
+     */
+    public function getMonthlyTopProducts(int $months = 12): array
+    {
+        // Ensure months is between 1 and 36
+        $months = max(1, min(36, $months));
+
+        // Calculate date range - always latest N months ending with current month
+        $endDate = Carbon::now()->endOfMonth();
+        $startDate = Carbon::now()->subMonths($months - 1)->startOfMonth();
+
+        // OPTIMIZATION: Single query with GROUP BY instead of N queries
+        $monthlyData = Order::whereBetween('dt', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->select(
+                DB::raw('YEAR(dt) as year'),
+                DB::raw('MONTH(dt) as month'),
+                DB::raw('SUM(total) as revenue')
+            )
+            ->groupBy(DB::raw('YEAR(dt)'), DB::raw('MONTH(dt)'))
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(function($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        $labels = [];
+        $revenues = [];
+        $monthsData = [];
+
+        // Generate all months in range, filling gaps with 0
+        $currentMonth = $startDate->copy();
+        while ($currentMonth <= $endDate) {
+            $year = $currentMonth->year;
+            $month = $currentMonth->month;
+            $key = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT);
+            
+            // Label format: "Jun 2025"
+            $monthLabel = $currentMonth->format('M Y');
+            $labels[] = $monthLabel;
+
+            // Get revenue from query result or 0 if not found
+            $monthRevenue = isset($monthlyData[$key]) 
+                ? round((float) $monthlyData[$key]->revenue, 2)
+                : 0.0;
+            
+            $revenues[] = $monthRevenue;
+
+            // Store month data for reference
+            $monthsData[] = [
+                'year' => $year,
+                'month' => $month,
+                'label' => $monthLabel,
+                'revenue' => $monthRevenue,
+            ];
+
+            // Move to next month
+            $currentMonth->addMonth();
+        }
+
+        return [
+            'labels' => $labels,
+            'revenues' => $revenues,
+            'months_data' => $monthsData,
+            'meta' => [
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+                'months' => $months,
+            ]
+        ];
+    }
+
+    /**
+     * Get top K products (units) for a specific year and month.
+     * Returns products ordered by revenue descending.
+     * 
+     * @param int $year Year (e.g., 2025)
+     * @param int $month Month (1-12)
+     * @param int $top Number of top products to return (default: 5, max: 20)
+     * @return array Structured data with top products and month information
+     */
+    public function getTopProductsForMonth(int $year, int $month, int $top = 5): array
+    {
+        // Ensure top is between 1 and 20
+        $top = max(1, min(20, $top));
+
+        // Create Carbon date for the specified month
+        $date = Carbon::createFromDate($year, $month, 1);
+        $monthStart = $date->copy()->startOfMonth();
+        $monthEnd = $date->copy()->endOfMonth();
+        $monthLabel = $date->format('M Y');
+
+        // Calculate total month revenue
+        $totalMonthRevenue = Order::whereBetween('dt', [$monthStart, $monthEnd])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        // Get top products (units) by revenue
+        // Join with units, clusters, projects to get product names
+        $topProducts = DB::table('orders')
+            ->join('units', 'orders.unit_id', '=', 'units.id')
+            ->leftJoin('clusters', 'orders.cluster_id', '=', 'clusters.id')
+            ->leftJoin('projects', 'orders.project_id', '=', 'projects.id')
+            ->whereBetween('orders.dt', [$monthStart, $monthEnd])
+            ->where('orders.status', 'completed')
+            ->select(
+                'orders.unit_id as product_id',
+                DB::raw('CONCAT(projects.name, " - ", clusters.name, " - ", units.name) as product_name'),
+                DB::raw('SUM(orders.total) as revenue')
+            )
+            ->groupBy('orders.unit_id', 'units.name', 'clusters.name', 'projects.name')
+            ->orderByDesc('revenue')
+            ->limit($top)
+            ->get();
+
+        // Format products data with percentage
+        $formattedProducts = [];
+        foreach ($topProducts as $index => $product) {
+            $revenue = round((float) $product->revenue, 2);
+            $percentage = $totalMonthRevenue > 0 
+                ? round(($revenue / $totalMonthRevenue) * 100, 2) 
+                : 0;
+
+            $formattedProducts[] = [
+                'rank' => $index + 1,
+                'product_id' => $product->product_id,
+                'product_name' => $product->product_name,
+                'revenue' => $revenue,
+                'percentage' => $percentage,
+            ];
+        }
+
+        return [
+            'year' => $year,
+            'month' => $month,
+            'label' => $monthLabel,
+            'total_month_revenue' => round((float) $totalMonthRevenue, 2),
+            'top' => $top,
+            'top_products' => $formattedProducts,
+        ];
+    }
+
+    /**
+     * Get monthly summary comparing current month to previous month.
+     * Returns revenue, purchase order count, and net profit with percent changes.
+     *
+     * @param \Carbon\Carbon|null $asOf Date to use as "current month" (defaults to today)
+     * @return array Monthly summary with current vs previous comparison
+     */
+    public function getMonthlySummary(?\Carbon\Carbon $asOf = null): array
+    {
+        // Default to today if not specified
+        $asOf = $asOf ?? Carbon::now();
+
+        // Current month period
+        $currentStart = $asOf->copy()->startOfMonth();
+        $currentEnd = $asOf->copy()->endOfMonth();
+
+        // Previous month period
+        $previousStart = $asOf->copy()->subMonth()->startOfMonth();
+        $previousEnd = $asOf->copy()->subMonth()->endOfMonth();
+
+        // Calculate total revenue for current month (completed orders)
+        $currentRevenue = Order::whereBetween('dt', [$currentStart, $currentEnd])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        // Calculate total revenue for previous month
+        $previousRevenue = Order::whereBetween('dt', [$previousStart, $previousEnd])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        // Calculate purchase order counts
+        $currentPoCount = PurchaseOrder::whereBetween('dt', [$currentStart, $currentEnd])
+            ->count();
+
+        $previousPoCount = PurchaseOrder::whereBetween('dt', [$previousStart, $previousEnd])
+            ->count();
+
+        // Calculate net profit using existing method
+        $currentProfitLoss = $this->calculateProfitLoss(
+            $currentStart->format('Y-m-d'),
+            $currentEnd->format('Y-m-d')
+        );
+        $currentNetProfit = $currentProfitLoss['net_profit'];
+
+        $previousProfitLoss = $this->calculateProfitLoss(
+            $previousStart->format('Y-m-d'),
+            $previousEnd->format('Y-m-d')
+        );
+        $previousNetProfit = $previousProfitLoss['net_profit'];
+
+        // Helper function to calculate percent change
+        $calculatePercentChange = function ($current, $previous) {
+            if ($previous == 0) {
+                // Handle division by zero
+                return null;
+            }
+            return round((($current - $previous) / abs($previous)) * 100, 2);
+        };
+
+        return [
+            'as_of' => $asOf->format('Y-m-d'),
+            'current_period' => [
+                'start' => $currentStart->format('Y-m-d'),
+                'end' => $currentEnd->format('Y-m-d'),
+            ],
+            'previous_period' => [
+                'start' => $previousStart->format('Y-m-d'),
+                'end' => $previousEnd->format('Y-m-d'),
+            ],
+            'metrics' => [
+                'total_revenue' => [
+                    'current' => round((float) $currentRevenue, 2),
+                    'previous' => round((float) $previousRevenue, 2),
+                    'percent_change' => $calculatePercentChange($currentRevenue, $previousRevenue),
+                ],
+                'total_purchase_orders_count' => [
+                    'current' => (int) $currentPoCount,
+                    'previous' => (int) $previousPoCount,
+                    'percent_change' => $calculatePercentChange($currentPoCount, $previousPoCount),
+                ],
+                'total_net_profit' => [
+                    'current' => round((float) $currentNetProfit, 2),
+                    'previous' => round((float) $previousNetProfit, 2),
+                    'percent_change' => $calculatePercentChange($currentNetProfit, $previousNetProfit),
+                ],
+            ],
         ];
     }
 }

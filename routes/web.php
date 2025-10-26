@@ -122,6 +122,13 @@ Route::middleware('auth')->group(function () {
     
     // Reports - Monthly Growth API
     Route::get('/reports/monthly-growth', [\App\Http\Controllers\ReportController::class, 'monthlyGrowth'])->name('reports.monthly_growth');
+    
+    // Reports - Monthly Top Products API
+    Route::get('/reports/monthly-top-products', [\App\Http\Controllers\ReportController::class, 'monthlyTopProducts'])->name('reports.monthly_top_products');
+    Route::get('/reports/monthly-top-products/{year}/{month}', [\App\Http\Controllers\ReportController::class, 'monthlyTopProductsDrilldown'])->name('reports.monthly_top_products.drilldown');
+    
+    // Reports - Monthly Summary API
+    Route::get('/reports/monthly-summary', [\App\Http\Controllers\ReportController::class, 'monthlySummary'])->name('reports.monthly_summary');
 });
 
 require __DIR__.'/auth.php';
