@@ -19,7 +19,7 @@
         <div class="w-full max-w-md">
             <!-- Logo / App Name -->
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-emerald-600 mb-2">{{ config('app.name', 'Estatia') }}</h1>
+                <img class="h-8 w-auto mx-auto mb-4" src="{{ asset('estatia.png') }}" alt="{{ config('theme.brand.name') }}" onerror="this.style.display='none'">
                 <p class="text-gray-600">Create a new password</p>
             </div>
 

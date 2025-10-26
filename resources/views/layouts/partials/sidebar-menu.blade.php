@@ -90,7 +90,7 @@
 </div>
 
 <!-- Production Menu -->
-<div x-data="{ open: {{ request()->is('production/*') ? 'true' : 'false' }} || request()->is('projects*') || request()->is('units*') || request()->is('clusters*') }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('production/*') || request()->is('projects*') || request()->is('units*') || request()->is('clusters*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -175,7 +175,7 @@
 </div>
 
 <!-- Transaction Menu -->
-<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('invoices*') || request()->is('payments*') || request()->is('tickets*') || request()->is('feedbacks*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('purchase-orders*') || request()->is('orders*') || request()->is('invoices*') || request()->is('payments*') || request()->is('formulas*') || request()->is('products*') || request()->is('contractors*') || request()->is('types*') || request()->is('transaction/*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -243,7 +243,7 @@
 </div> --}}
 
 <!-- Customer Service Menu -->
-<div x-data="{ open: {{ request()->is('customer-service/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('customer-service/*') || request()->is('tickets*') || request()->is('feedbacks*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -279,7 +279,7 @@
 </div>
 
 <!-- Accounting Menu -->
-<div x-data="{ open: {{ request()->is('accounting/*') ? 'true' : 'false' }} }" class="space-y-1">
+<div x-data="{ open: {{ request()->is('accounting/*') || request()->is('journal-entries*') || request()->is('chart-of-accounts*') || request()->is('trial-balance*') || request()->is('general-ledger*') || request()->is('clusters*') ? 'true' : 'false' }} }" class="space-y-1">
     <button @click="open = !open" 
             class="group flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-emerald-800 hover:text-white transition-colors duration-150"
             :class="sidebarCollapsed && 'justify-center'">
@@ -306,7 +306,7 @@
         </svg>
         <span x-show="!sidebarCollapsed">Journal Entries</span>
     </a>
-    
+
     <a href="{{ route('chart-of-accounts.index') }}" 
        class="group flex items-center rounded-lg px-3 py-2 text-sm font-medium {{ request()->is('chart-of-accounts*') ? 'bg-emerald-700 text-white' : 'text-gray-300 hover:bg-emerald-800 hover:text-white' }} transition-colors duration-150"
        :class="sidebarCollapsed && 'justify-center'">

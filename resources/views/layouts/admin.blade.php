@@ -70,10 +70,9 @@
         <!-- Static sidebar for desktop -->
         <div class="hidden md:fixed md:inset-y-0 md:flex md:flex-col" :class="sidebarCollapsed ? 'md:w-20' : 'md:w-64'">
             <div class="flex min-h-0 flex-1 flex-col bg-emerald-900">
-                <div class="flex h-16 flex-shrink-0 items-center px-4 bg-emerald-950">
-                    <img x-show="!sidebarCollapsed" class="h-8 w-auto" src="{{ asset('images/logo.png') }}" alt="{{ config('theme.brand.name') }}" onerror="this.style.display='none'">
-                    <span x-show="!sidebarCollapsed" class="ml-2 text-xl font-bold text-white">{{ config('theme.brand.name', 'Estatia') }}</span>
-                    <span x-show="sidebarCollapsed" class="text-xl font-bold text-white">E</span>
+                <div class="flex h-16 flex-shrink-0 items-center px-4 bg-white">
+                    <img x-show="!sidebarCollapsed" class="h-8 w-auto" src="{{ asset('estatia.jpg') }}" alt="{{ config('theme.brand.name') }}" onerror="this.style.display='none'">
+                    <span x-show="sidebarCollapsed" class="text-xl font-bold text-white"><img class="h-8 w-auto" src="{{ asset('estatia2.jpg') }}" alt="{{ config('theme.brand.name') }}" onerror="this.style.display='none'"></span>
                 </div>
                 <div class="flex flex-1 flex-col overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-700 scrollbar-track-emerald-900">
                     <nav class="flex-1 space-y-1 px-2 py-4">
@@ -203,7 +202,7 @@
                                  x-transition:leave-end="transform opacity-0 scale-95"
                                  class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                  style="display: none;">
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                {{-- <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                                     <div class="flex items-center">
                                         <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -219,7 +218,7 @@
                                         </svg>
                                         Settings
                                     </div>
-                                </a>
+                                </a> --}}
                                 <hr class="my-1 border-gray-200">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
