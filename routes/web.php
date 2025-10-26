@@ -101,6 +101,9 @@ Route::middleware('auth')->group(function () {
     // Transaction - Feedbacks (Full CRUD)
     Route::resource('feedbacks', \App\Http\Controllers\FeedbackController::class);
 
+    // Accounting - Journal Entries
+    Route::get('/journal-entries', [\App\Http\Controllers\JournalEntryController::class, 'index'])->name('journal-entries.index');
+
     // Accounting - Chart of Account
     Route::get('/chart-of-accounts', [\App\Http\Controllers\ChartOfAccountController::class, 'index'])->name('chart-of-accounts.index');
 
