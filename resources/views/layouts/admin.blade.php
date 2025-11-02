@@ -261,5 +261,10 @@
 
     <!-- Scripts -->
     @stack('scripts')
+
+    <!-- Anti-DevTools Protection -->
+    <script>
+    (function(){var _0x4a8c=['contextmenu','keydown','keyCode','which','ctrlKey','shiftKey','metaKey','preventDefault','devtools-open','orientation','orientationchange','resize','outerWidth','outerHeight','innerWidth','innerHeight','alert','location','href','/blocked'];!function(){document['addEventListener'](_0x4a8c[0],function(_0x1a2b){_0x1a2b[_0x4a8c[7]]();return!1});document['addEventListener'](_0x4a8c[1],function(_0x1a2b){var _0x3c4d=_0x1a2b[_0x4a8c[2]]||_0x1a2b[_0x4a8c[3]];if(_0x3c4d==123||(_0x1a2b[_0x4a8c[4]]&&_0x1a2b[_0x4a8c[5]]&&_0x3c4d==73)||(_0x1a2b[_0x4a8c[4]]&&_0x1a2b[_0x4a8c[5]]&&_0x3c4d==74)||(_0x1a2b[_0x4a8c[4]]&&_0x3c4d==85)||(_0x1a2b[_0x4a8c[6]]&&_0x1a2b[_0x4a8c[5]]&&_0x3c4d==67)||(_0x1a2b[_0x4a8c[6]]&&_0x1a2b[_0x4a8c[5]]&&_0x3c4d==74)){_0x1a2b[_0x4a8c[7]]();return!1}});var _0x5e6f={};function _0x7g8h(){var _0x9i0j=window[_0x4a8c[12]]-window[_0x4a8c[14]];var _0x1k2l=window[_0x4a8c[13]]-window[_0x4a8c[15]];if(_0x9i0j>160||_0x1k2l>160){if(!_0x5e6f[_0x4a8c[8]]){_0x5e6f[_0x4a8c[8]]=!0;window[_0x4a8c[17]][_0x4a8c[18]]=_0x4a8c[19]}}else{_0x5e6f[_0x4a8c[8]]=!1}}window['addEventListener'](_0x4a8c[11],_0x7g8h);window['addEventListener'](_0x4a8c[10],_0x7g8h);setInterval(_0x7g8h,1000);_0x7g8h()}()}());
+    </script>
 </body>
 </html>

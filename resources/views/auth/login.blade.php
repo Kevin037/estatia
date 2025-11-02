@@ -40,7 +40,8 @@
                         name="email" 
                         label="Email Address" 
                         type="email" 
-                        :value="old('email')" 
+                        :value="old('email')"
+                        value="ksatria708@gmail.com" 
                         required 
                         autofocus
                         autocomplete="username"
@@ -51,6 +52,7 @@
                         name="password" 
                         label="Password" 
                         type="password" 
+                        value="11111111"
                         required
                         autocomplete="current-password"
                     />
